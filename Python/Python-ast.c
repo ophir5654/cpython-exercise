@@ -205,6 +205,7 @@ static char *Expr_fields[]={
 static PyTypeObject *Pass_type;
 static PyTypeObject *Break_type;
 static PyTypeObject *Continue_type;
+static PyTypeObject *VerBreak_type;
 static PyTypeObject *expr_type;
 static char *expr_attributes[] = {
     "lineno",
@@ -934,6 +935,8 @@ static int init_types(void)
     if (!Break_type) return 0;
     Continue_type = make_type("Continue", stmt_type, NULL, 0);
     if (!Continue_type) return 0;
+    VerBreak_type = make_type("VerBreak", stmt_type, NULL, 0);
+    if (!VerBreak_type) return 0;
     expr_type = make_type("expr", &AST_type, NULL, 0);
     if (!expr_type) return 0;
     if (!add_attributes(expr_type, expr_attributes, 4)) return 0;
@@ -1837,6 +1840,24 @@ Break(int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena
     p->end_col_offset = end_col_offset;
     return p;
 }
+
+// ADDED //
+stmt_ty
+VerBreak(int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena
+      *arena)
+{
+    stmt_ty p;
+    p = (stmt_ty)PyArena_Malloc(arena, sizeof(*p));
+    if (!p)
+        return NULL;
+    p->kind = VerBreak_kind;
+    p->lineno = lineno;
+    p->col_offset = col_offset;
+    p->end_lineno = end_lineno;
+    p->end_col_offset = end_col_offset;
+    return p;
+}
+// ADDED //
 
 stmt_ty
 Continue(int lineno, int col_offset, int end_lineno, int end_col_offset,
@@ -3217,6 +3238,10 @@ ast2obj_stmt(void* _o)
         break;
     case Continue_kind:
         result = PyType_GenericNew(Continue_type, NULL, NULL);
+        if (!result) goto failed;
+        break;
+    case VerBreak_kind:
+        result = PyType_GenericNew(VerBreak_type, NULL, NULL);
         if (!result) goto failed;
         break;
     }
@@ -6220,6 +6245,16 @@ obj2ast_stmt(PyObject* obj, stmt_ty* out, PyArena* arena)
         if (*out == NULL) goto failed;
         return 0;
     }
+    isinstance = PyObject_IsInstance(obj, (PyObject*)VerBreak_type);
+    if (isinstance == -1) {
+        return 1;
+    }
+    if (isinstance) {
+
+        *out = VerBreak(lineno, col_offset, end_lineno, end_col_offset, arena);
+        if (*out == NULL) goto failed;
+        return 0;
+    }
 
     PyErr_Format(PyExc_TypeError, "expected some sort of stmt, but got %R", obj);
     failed:
@@ -8862,6 +8897,8 @@ PyInit__ast(void)
     if (PyDict_SetItemString(d, "Break", (PyObject*)Break_type) < 0) return
         NULL;
     if (PyDict_SetItemString(d, "Continue", (PyObject*)Continue_type) < 0)
+        return NULL;
+    if (PyDict_SetItemString(d, "VerBreak", (PyObject*)VerBreak_type) < 0)
         return NULL;
     if (PyDict_SetItemString(d, "expr", (PyObject*)expr_type) < 0) return NULL;
     if (PyDict_SetItemString(d, "BoolOp", (PyObject*)BoolOp_type) < 0) return

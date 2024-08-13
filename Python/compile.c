@@ -2846,6 +2846,26 @@ compiler_break(struct compiler *c)
     return compiler_error(c, "'break' outside loop");
 }
 
+// ADDED //
+static int
+compiler_verbreak(struct compiler *c)
+{
+    for (int depth = c->u->u_nfblocks; depth--;) {
+        struct fblockinfo *info = &c->u->u_fblock[depth];
+
+        if (!compiler_unwind_fblock(c, info, 0))
+            return 0;
+        if (info->fb_type == WHILE_LOOP || info->fb_type == FOR_LOOP) {
+            ADDOP_JABS(c, JUMP_ABSOLUTE, info->fb_exit);
+            printf("verbreak\n");
+            return 1;
+        }
+    }
+    return compiler_error(c, "'break' outside loop");
+}
+// ADDED //
+
+
 static int
 compiler_continue(struct compiler *c)
 {
@@ -3387,6 +3407,8 @@ compiler_visit_stmt(struct compiler *c, stmt_ty s)
         break;
     case Break_kind:
         return compiler_break(c);
+    case VerBreak_kind:
+        return compiler_verbreak(c);
     case Continue_kind:
         return compiler_continue(c);
     case With_kind:

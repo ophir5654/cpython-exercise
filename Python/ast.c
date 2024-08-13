@@ -505,6 +505,9 @@ validate_stmt(stmt_ty stmt)
              validate_expr(stmt->v.AsyncFunctionDef.returns, Load));
     case Pass_kind:
     case Break_kind:
+    // ADDED //
+    case VerBreak_kind:
+    // ADDED //
     case Continue_kind:
         return 1;
     default:
@@ -3547,9 +3550,10 @@ static stmt_ty
 ast_for_flow_stmt(struct compiling *c, const node *n)
 {
     /*
-      flow_stmt: break_stmt | continue_stmt | return_stmt | raise_stmt
+      flow_stmt: break_stmt | verbreak_stmt | continue_stmt | return_stmt | raise_stmt
                  | yield_stmt
       break_stmt: 'break'
+      verbreak_stmt: 'verbreak' **NEW**
       continue_stmt: 'continue'
       return_stmt: 'return' [testlist]
       yield_stmt: yield_expr
@@ -3564,6 +3568,11 @@ ast_for_flow_stmt(struct compiling *c, const node *n)
         case break_stmt:
             return Break(LINENO(n), n->n_col_offset,
                          n->n_end_lineno, n->n_end_col_offset, c->c_arena);
+        // ADDED //
+        case verbreak_stmt:
+            return VerBreak(LINENO(n), n->n_col_offset,
+                        n->n_end_lineno, n->n_end_col_offset, c->c_arena);
+        // ADDED //
         case continue_stmt:
             return Continue(LINENO(n), n->n_col_offset,
                             n->n_end_lineno, n->n_end_col_offset, c->c_arena);
