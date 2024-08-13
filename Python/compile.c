@@ -2857,6 +2857,7 @@ compiler_verbreak(struct compiler *c)
             return 0;
         if (info->fb_type == WHILE_LOOP || info->fb_type == FOR_LOOP) {
             ADDOP_JABS(c, JUMP_ABSOLUTE, info->fb_exit);
+            printf("verbreak\n");
             return 1;
         }
     }
