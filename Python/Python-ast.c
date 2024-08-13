@@ -1841,6 +1841,7 @@ Break(int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena
     return p;
 }
 
+// ADDED //
 stmt_ty
 VerBreak(int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena
       *arena)
@@ -1856,6 +1857,7 @@ VerBreak(int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena
     p->end_col_offset = end_col_offset;
     return p;
 }
+// ADDED //
 
 stmt_ty
 Continue(int lineno, int col_offset, int end_lineno, int end_col_offset,

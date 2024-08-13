@@ -505,7 +505,9 @@ validate_stmt(stmt_ty stmt)
              validate_expr(stmt->v.AsyncFunctionDef.returns, Load));
     case Pass_kind:
     case Break_kind:
+    // ADDED //
     case VerBreak_kind:
+    // ADDED //
     case Continue_kind:
         return 1;
     default:
@@ -3566,9 +3568,11 @@ ast_for_flow_stmt(struct compiling *c, const node *n)
         case break_stmt:
             return Break(LINENO(n), n->n_col_offset,
                          n->n_end_lineno, n->n_end_col_offset, c->c_arena);
+        // ADDED //
         case verbreak_stmt:
             return VerBreak(LINENO(n), n->n_col_offset,
                         n->n_end_lineno, n->n_end_col_offset, c->c_arena);
+        // ADDED //
         case continue_stmt:
             return Continue(LINENO(n), n->n_col_offset,
                             n->n_end_lineno, n->n_end_col_offset, c->c_arena);

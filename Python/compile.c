@@ -2846,6 +2846,7 @@ compiler_break(struct compiler *c)
     return compiler_error(c, "'break' outside loop");
 }
 
+// ADDED //
 static int
 compiler_verbreak(struct compiler *c)
 {
@@ -2861,6 +2862,7 @@ compiler_verbreak(struct compiler *c)
     }
     return compiler_error(c, "'break' outside loop");
 }
+// ADDED //
 
 
 static int
